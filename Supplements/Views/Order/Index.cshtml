@@ -1,0 +1,61 @@
+@model Supplements.ViewModels.Order.OrderListViewModel
+@{
+    ViewData["Title"] = "My Orders";
+}
+<div class="max-w-5xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">My Orders</h1>
+        @if (Model.Orders.Any())
+        {
+            <p class="text-gray-600 dark:text-gray-400">Track and manage your orders</p>
+        }
+    </div>
+
+    @if (!Model.Orders.Any())
+    {
+        <partial name="_EmptyState" view-data='new ViewDataDictionary(ViewData) { { "EmptyIcon", "receipt_long" }, { "EmptyTitle", "No orders yet" }, { "EmptyMessage", "Place your first order to see it here." }, { "EmptyActionText", "Start Shopping" }, { "EmptyActionUrl", "/Shop" } }' />
+    }
+    else
+    {
+        <div class="space-y-4">
+            @foreach (var order in Model.Orders)
+            {
+                <a href="/Order/Details/@order.Id" class="card card-body hover:shadow-xl transition-all duration-300 animate-slide-up block">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/30 dark:to-primary-800/30 rounded-xl flex items-center justify-center">
+                                    <span class="material-icons text-primary-600 dark:text-primary-400">receipt_long</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-white">Order #@order.Id.ToString().Substring(0, 8).ToUpper()</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">@order.OrderDate.ToString("MMM dd, yyyy · h:mm tt")</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <span class="badge
+                                    @(order.Status == "Pending" ? "badge-warning" :
+                                      order.Status == "Processing" ? "badge-info" :
+                                      order.Status == "Shipped" ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" :
+                                      order.Status == "Delivered" ? "badge-success" :
+                                      "badge-danger")">
+                                    @order.Status
+                                </span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">· @order.ItemCount items</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <div class="text-right">
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Total</p>
+                                <p class="text-2xl font-bold text-gray-900 dark:text-white">$@order.TotalPrice.ToString("F2")</p>
+                            </div>
+                            <span class="material-icons text-gray-400">chevron_right</span>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+</div>

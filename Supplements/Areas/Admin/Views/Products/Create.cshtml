@@ -1,0 +1,116 @@
+@model Supplements.Core.Entities.Product
+@{
+    ViewData["Title"] = "Create Product";
+    var cats = ViewBag.Categories as System.Collections.IEnumerable;
+    var brands = ViewBag.Brands as System.Collections.IEnumerable;
+    var catCount = cats?.OfType<object>().Count() ?? 0;
+    var brandCount = brands?.OfType<object>().Count() ?? 0;
+}
+
+<div class="max-w-2xl">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Create Product</h1>
+
+    <form method="post" class="card">
+        @Html.AntiForgeryToken()
+        <div class="card-body space-y-5">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Name</label>
+                <input name="Name" class="input" required />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Description</label>
+                <textarea name="Description" class="input" rows="4"></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Price</label>
+                    <input name="Price" class="input" type="number" step="0.01" required min="0.01" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Discount (%)</label>
+                    <input name="DiscountPercentage" class="input" type="number" step="0.01" />
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Stock Quantity</label>
+                    <input name="StockQuantity" class="input" type="number" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Main Image URL</label>
+                    <input name="MainImageUrl" class="input" />
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Category</label>
+                    <select name="CategoryId" class="input" required>
+                        <option value="">Select category</option>
+                        @if (ViewBag.Categories != null)
+                        {
+                            foreach (var cat in ViewBag.Categories)
+                            {
+                                <option value="@cat.Value">@cat.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Brand</label>
+                    <select name="BrandId" class="input" required>
+                        <option value="">Select brand</option>
+                        @if (ViewBag.Brands != null)
+                        {
+                            foreach (var brand in ViewBag.Brands)
+                            {
+                                <option value="@brand.Value">@brand.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Variants -->
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <label class="block text-sm font-bold text-gray-900 dark:text-white">Variants</label>
+                    <button type="button" onclick="addVariant()" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">+ Add Variant</button>
+                </div>
+                <div id="variantsContainer">
+                    <div class="variant-row grid grid-cols-4 gap-3 mb-2">
+                        <input name="Variants[0].Flavor" placeholder="Flavor" class="input" />
+                        <input name="Variants[0].Size" placeholder="Size" class="input" />
+                        <input name="Variants[0].AdditionalPrice" placeholder="Extra $" type="number" step="0.01" class="input" />
+                        <div class="flex gap-2">
+                            <input name="Variants[0].StockQuantity" placeholder="Stock" type="number" class="input flex-1" />
+                            <button type="button" onclick="this.closest('.variant-row').remove()" class="text-red-500 hover:text-red-700 px-2">✕</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 pt-4">
+                <button type="submit" class="btn btn-primary">Create Product</button>
+                <a href="/Admin/Products" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        let variantIndex = 1;
+        function addVariant() {
+            const container = document.getElementById('variantsContainer');
+            const row = document.createElement('div');
+            row.className = 'variant-row grid grid-cols-4 gap-3 mb-2';
+            row.innerHTML =
+                `<input name="Variants[${variantIndex}].Flavor" placeholder="Flavor" class="input" />` +
+                `<input name="Variants[${variantIndex}].Size" placeholder="Size" class="input" />` +
+                `<input name="Variants[${variantIndex}].AdditionalPrice" placeholder="Extra $" type="number" step="0.01" class="input" />` +
+                `<div class="flex gap-2"><input name="Variants[${variantIndex}].StockQuantity" placeholder="Stock" type="number" class="input flex-1" /><button type="button" onclick="this.closest('.variant-row').remove()" class="text-red-500 hover:text-red-700 px-2">✕</button></div>`;
+            container.appendChild(row);
+            variantIndex++;
+        }
+    </script>
+}

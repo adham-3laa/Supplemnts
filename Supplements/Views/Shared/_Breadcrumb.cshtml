@@ -1,0 +1,26 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var id = ViewContext.RouteData.Values["id"];
+}
+<nav class="flex items-center gap-1.5 text-sm mb-8 flex-wrap" aria-label="Breadcrumb">
+    <a href="/" class="inline-flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-base">
+        <span class="material-icons text-base">home</span>
+        <span>Home</span>
+    </a>
+    @if (!string.IsNullOrEmpty(controller) && controller != "Home")
+    {
+        <span class="material-icons text-gray-300 dark:text-gray-600 text-base">chevron_right</span>
+        <a href="/@controller" class="text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-base capitalize">@controller</a>
+    }
+    @if (!string.IsNullOrEmpty(action) && action != "Index")
+    {
+        <span class="material-icons text-gray-300 dark:text-gray-600 text-base">chevron_right</span>
+        <span class="text-gray-900 dark:text-white font-medium capitalize">@action</span>
+    }
+    @if (id != null)
+    {
+        <span class="material-icons text-gray-300 dark:text-gray-600 text-base">chevron_right</span>
+        <span class="text-gray-900 dark:text-white font-medium">@id</span>
+    }
+</nav>

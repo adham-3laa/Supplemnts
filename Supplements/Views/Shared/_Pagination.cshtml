@@ -1,0 +1,63 @@
+@model dynamic
+@{
+    var baseUrl = ViewContext.HttpContext.Request.Path + ViewContext.HttpContext.Request.QueryString.Value;
+    var query = System.Web.HttpUtility.ParseQueryString(ViewContext.HttpContext.Request.QueryString.Value ?? "");
+}
+@if (Model.TotalPages > 1)
+{
+    <nav class="flex items-center justify-center gap-2 mt-10" aria-label="Pagination">
+        <!-- Previous -->
+        @if (Model.HasPreviousPage)
+        {
+            <a href="@Url.Action(null, new { pageNumber = Model.PageNumber - 1, pageSize = Model.PageSize })"
+               class="inline-flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-primary-300 dark:hover:border-primary-700 transition-base shadow-sm">
+                <span class="material-icons text-lg">chevron_left</span>
+                <span class="hidden sm:inline">Previous</span>
+            </a>
+        }
+        else
+        {
+            <span class="inline-flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-gray-300 dark:text-gray-600 bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 rounded-xl cursor-not-allowed">
+                <span class="material-icons text-lg">chevron_left</span>
+                <span class="hidden sm:inline">Previous</span>
+            </span>
+        }
+
+        <!-- Page Numbers -->
+        <div class="flex items-center gap-1">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                if (i == Model.PageNumber)
+                {
+                    <span class="w-10 h-10 flex items-center justify-center text-sm font-bold text-white bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl shadow-md">@i</span>
+                }
+                else if (i == 1 || i == Model.TotalPages || (i >= Model.PageNumber - 2 && i <= Model.PageNumber + 2))
+                {
+                    <a href="@Url.Action(null, new { pageNumber = i, pageSize = Model.PageSize })"
+                       class="w-10 h-10 flex items-center justify-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-base">@i</a>
+                }
+                else if (i == Model.PageNumber - 3 || i == Model.PageNumber + 3)
+                {
+                    <span class="w-10 h-10 flex items-center justify-center text-sm text-gray-400">...</span>
+                }
+            }
+        </div>
+
+        <!-- Next -->
+        @if (Model.HasNextPage)
+        {
+            <a href="@Url.Action(null, new { pageNumber = Model.PageNumber + 1, pageSize = Model.PageSize })"
+               class="inline-flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-primary-300 dark:hover:border-primary-700 transition-base shadow-sm">
+                <span class="hidden sm:inline">Next</span>
+                <span class="material-icons text-lg">chevron_right</span>
+            </a>
+        }
+        else
+        {
+            <span class="inline-flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-gray-300 dark:text-gray-600 bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 rounded-xl cursor-not-allowed">
+                <span class="hidden sm:inline">Next</span>
+                <span class="material-icons text-lg">chevron_right</span>
+            </span>
+        }
+    </nav>
+}

@@ -1,0 +1,103 @@
+@model List<Supplements.Core.Entities.Product>
+@{
+    ViewData["Title"] = "Products";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Products</h1>
+        <a href="/Admin/Products/Create" class="btn btn-primary">
+            <span class="material-icons text-lg">add</span> Add Product
+        </a>
+    </div>
+
+    <form method="get" class="flex gap-3">
+        <input type="text" name="search" value="@ViewBag.Search" placeholder="Search products..." class="input max-w-sm" />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <div class="card overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                        <th class="text-left px-4 py-3 font-semibold">Name</th>
+                        <th class="text-left px-4 py-3 font-semibold">Category</th>
+                        <th class="text-left px-4 py-3 font-semibold">Brand</th>
+                        <th class="text-right px-4 py-3 font-semibold">Price</th>
+                        <th class="text-right px-4 py-3 font-semibold">Stock</th>
+                        <th class="text-center px-4 py-3 font-semibold">Status</th>
+                        <th class="text-right px-4 py-3 font-semibold">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    @foreach (var product in Model)
+                    {
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-3">
+                                    @if (!string.IsNullOrEmpty(product.MainImageUrl))
+                                    {
+                                        <img src="@product.MainImageUrl" alt="" class="w-10 h-10 rounded-lg object-cover" />
+                                    }
+                                    <div>
+                                        <a href="/Admin/Products/Details/@product.Id" class="font-medium text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400">@product.Name</a>
+                                        <p class="text-xs text-gray-500">@product.Seller?.FullName</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400">@product.Category?.Name</td>
+                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400">@product.Brand?.Name</td>
+                            <td class="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">$@product.Price.ToString("N2")</td>
+                            <td class="px-4 py-3 text-right">
+                                <span class="@(product.StockQuantity <= 5 ? "text-red-600 dark:text-red-400 font-semibold" : "text-gray-600 dark:text-gray-400")">@product.StockQuantity</span>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="badge @(product.IsActive ? "badge-success" : "badge-danger")">@(product.IsActive ? "Active" : "Inactive")</span>
+                            </td>
+                            <td class="px-4 py-3 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="/Admin/Products/Edit/@product.Id" class="icon-btn" title="Edit">
+                                        <span class="material-icons text-lg">edit</span>
+                                    </a>
+                                    <form method="post" action="/Admin/Products/Delete/@product.Id" onsubmit="return confirmDelete()" class="inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="icon-btn text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20" title="Delete">
+                                            <span class="material-icons text-lg">delete</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="px-4 py-12">
+                                <partial name="_EmptyState" view-data='new ViewDataDictionary(ViewData) { { "EmptyIcon", "inventory_2" }, { "EmptyTitle", "No products found" }, { "EmptyMessage", "Get started by adding your first product." }, { "EmptyActionText", "Add Product" }, { "EmptyActionUrl", "/Admin/Products/Create" } }' />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav class="flex items-center justify-center gap-2 mt-8">
+            @if (ViewBag.Page > 1)
+            {
+                <a href="?page=@(ViewBag.Page - 1)&search=@ViewBag.Search" class="btn btn-secondary btn-sm">Previous</a>
+            }
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <a href="?page=@i&search=@ViewBag.Search" class="btn btn-sm @(i == ViewBag.Page ? "btn-primary" : "btn-secondary")">@i</a>
+            }
+            @if (ViewBag.Page < ViewBag.TotalPages)
+            {
+                <a href="?page=@(ViewBag.Page + 1)&search=@ViewBag.Search" class="btn btn-secondary btn-sm">Next</a>
+            }
+        </nav>
+    }
+</div>

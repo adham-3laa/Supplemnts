@@ -1,0 +1,83 @@
+@using System.Security.Claims
+@{
+    var isAdmin = User.IsInRole("Admin");
+    var isSeller = User.IsInRole("Seller");
+    var area = ViewContext.RouteData.Values["area"]?.ToString();
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    bool inAdmin = area == "Admin";
+}
+
+<aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out overflow-y-auto">
+    <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-800">
+        <a href="/Admin" class="flex items-center gap-2">
+            <span class="material-icons text-primary-600 text-2xl">fitness_center</span>
+            <span class="text-lg font-bold text-gray-900 dark:text-white">Admin</span>
+        </a>
+    </div>
+
+    <nav class="p-4 space-y-1">
+        <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Main</p>
+
+        <a href="/Admin" class="@(inAdmin && controller == "Dashboard" ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800") flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-base">
+            <span class="material-icons text-lg">dashboard</span> Dashboard
+        </a>
+
+        @if (isAdmin || isSeller)
+        {
+            <p class="px-3 pt-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Products</p>
+
+            <a href="/Admin/Products" class="@(inAdmin && controller == "Products" && action == "Index" ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800") flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-base">
+                <span class="material-icons text-lg">inventory_2</span> All Products
+            </a>
+            <a href="/Admin/Products/Create" class="@(inAdmin && controller == "Products" && action == "Create" ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800") flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-base">
+                <span class="material-icons text-lg">add_box</span> Add Product
+            </a>
+            <a href="/Admin/Products" class="@(inAdmin && controller == "Products" && action == "Index" ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800") flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-base">
+                <span class="material-icons text-lg">inventory</span> Stock Management
+            </a>
+        }
+
+        @if (isAdmin)
+        {
+            <p class="px-3 pt-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Catalog</p>
+
+            <a href="/Admin/Categories" class="@(inAdmin && controller == "Categories" ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800") flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-base">
+                <span class="material-icons text-lg">category</span> Categories
+            </a>
+            <a href="/Admin/Brands" class="@(inAdmin && controller == "Brands" ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800") flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-base">
+                <span class="material-icons text-lg">branding_watermark</span> Brands
+            </a>
+        }
+
+        <p class="px-3 pt-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Orders</p>
+
+        <a href="/Admin/Orders" class="@(inAdmin && controller == "Orders" ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800") flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-base">
+            <span class="material-icons text-lg">receipt_long</span> All Orders
+        </a>
+
+        @if (isAdmin)
+        {
+            <a href="/Admin" class="@(inAdmin && controller == "Dashboard" ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800") flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-base">
+                <span class="material-icons text-lg">bar_chart</span> Dashboard
+            </a>
+
+            <p class="px-3 pt-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Management</p>
+
+            <a href="/Admin/Users" class="@(inAdmin && controller == "Users" ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800") flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-base">
+                <span class="material-icons text-lg">group</span> Users
+            </a>
+        }
+
+        <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-800">
+            <a href="/" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-base">
+                <span class="material-icons text-lg">arrow_back</span> Back to Store
+            </a>
+            <form action="/Account/Logout" method="post">
+                <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-base">
+                    <span class="material-icons text-lg">logout</span> Sign Out
+                </button>
+            </form>
+        </div>
+    </nav>
+</aside>

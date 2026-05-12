@@ -1,0 +1,56 @@
+@model Supplements.ViewModels.Profile.EditProfileViewModel
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+<div class="max-w-2xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">Edit Profile</h1>
+        <p class="text-gray-600 dark:text-gray-400">Update your account information</p>
+    </div>
+
+    <div class="card animate-slide-up">
+        <div class="p-6 bg-gradient-to-br from-primary-50 to-white dark:from-primary-900/10 dark:to-gray-900 border-b border-gray-200 dark:border-gray-800">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <span class="material-icons text-primary-600 dark:text-primary-400">edit</span>
+                Profile Information
+            </h2>
+        </div>
+
+        <div class="p-8">
+            <form method="post" class="space-y-6">
+                <div asp-validation-summary="ModelOnly" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm p-4 rounded-xl @(ViewData.ModelState.IsValid ? "hidden" : "")"></div>
+
+                <div>
+                    <label asp-for="FullName" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"></label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 material-icons text-gray-400 text-lg">badge</span>
+                        <input asp-for="FullName" class="input pl-12" placeholder="Enter your full name" />
+                    </div>
+                    <span asp-validation-for="FullName" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+
+                <div>
+                    <label asp-for="PhoneNumber" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"></label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 material-icons text-gray-400 text-lg">phone</span>
+                        <input asp-for="PhoneNumber" class="input pl-12" placeholder="+1 (555) 123-4567" />
+                    </div>
+                    <span asp-validation-for="PhoneNumber" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="flex flex-wrap gap-3">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-icons">save</span>
+                        Save Changes
+                    </button>
+                    <a href="/Profile" class="btn btn-outline">
+                        <span class="material-icons">close</span>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

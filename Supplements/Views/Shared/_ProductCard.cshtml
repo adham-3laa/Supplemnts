@@ -1,0 +1,65 @@
+@model Supplements.ViewModels.Shop.ProductCardViewModel
+
+<div class="product-card group relative">
+    <a href="/Shop/Details/@Model.Id" class="block relative overflow-hidden aspect-square bg-gray-100 dark:bg-gray-800">
+        @if (!string.IsNullOrEmpty(Model.MainImageUrl))
+        {
+            <img src="@Model.MainImageUrl" alt="@Model.Name" class="product-image" loading="lazy" />
+        }
+        else
+        {
+            <div class="flex items-center justify-center h-full">
+                <span class="material-icons text-6xl text-gray-300 dark:text-gray-600">image</span>
+            </div>
+        }
+
+        <!-- Badges -->
+        @if (Model.HasDiscount)
+        {
+            <span class="absolute top-3 left-3 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg shadow-lg">
+                -@Model.DiscountPercentage%
+            </span>
+        }
+
+        @if (!Model.InStock)
+        {
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+                <span class="bg-white/90 dark:bg-gray-900/90 text-gray-900 dark:text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-lg">
+                    Out of Stock
+                </span>
+            </div>
+        }
+
+        <!-- Quick Actions Overlay -->
+        <div class="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out p-3">
+            <div class="flex items-center gap-2 justify-center">
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm text-sm font-medium text-gray-900 dark:text-white rounded-xl shadow-lg">
+                    <span class="material-icons text-lg">visibility</span> Quick View
+                </span>
+            </div>
+        </div>
+    </a>
+
+    <div class="p-4 space-y-2">
+        <!-- Brand -->
+        <p class="text-xs font-medium text-primary-600 dark:text-primary-400 uppercase tracking-wider">@Model.BrandName</p>
+
+        <!-- Name -->
+        <a href="/Shop/Details/@Model.Id" class="block font-semibold text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-base line-clamp-2 leading-snug">
+            @Model.Name
+        </a>
+
+        <!-- Price -->
+        <div class="flex items-center gap-2 pt-1">
+            @if (Model.HasDiscount)
+            {
+                <span class="text-lg font-bold text-primary-600 dark:text-primary-400">$@Model.FinalPrice.ToString("F2")</span>
+                <span class="text-sm text-gray-400 line-through">$@Model.Price.ToString("F2")</span>
+            }
+            else
+            {
+                <span class="text-lg font-bold text-gray-900 dark:text-white">$@Model.Price.ToString("F2")</span>
+            }
+        </div>
+    </div>
+</div>

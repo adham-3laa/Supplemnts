@@ -1,0 +1,144 @@
+@model Supplements.ViewModels.Cart.CartViewModel
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+<div class="max-w-6xl mx-auto">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">Shopping Cart</h1>
+            @if (!Model.IsEmpty)
+            {
+                <p class="text-gray-600 dark:text-gray-400">
+                    <span class="font-medium text-gray-900 dark:text-white">@Model.ItemCount</span> items in your cart
+                </p>
+            }
+        </div>
+        @if (!Model.IsEmpty)
+        {
+            <a href="/Shop" class="hidden sm:inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-base">
+                <span class="material-icons">arrow_back</span>
+                Continue Shopping
+            </a>
+        }
+    </div>
+
+    @if (Model.IsEmpty)
+    {
+        <partial name="_EmptyState" view-data='new ViewDataDictionary(ViewData) { { "EmptyIcon", "shopping_cart" }, { "EmptyTitle", "Your cart is empty" }, { "EmptyMessage", "Browse our premium supplements and add items to your cart to get started." }, { "EmptyActionText", "Start Shopping" }, { "EmptyActionUrl", "/Shop" } }' />
+    }
+    else
+    {
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Cart Items -->
+            <div class="lg:col-span-2 space-y-4">
+                @foreach (var item in Model.Items)
+                {
+                    <div class="card card-body hover:shadow-lg transition-all duration-300 animate-slide-up">
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <!-- Product Image -->
+                            <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-xl flex items-center justify-center shrink-0 shadow-inner">
+                                <span class="material-icons text-4xl text-gray-400 dark:text-gray-500">inventory_2</span>
+                            </div>
+
+                            <!-- Product Info -->
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-1">@item.ProductName</h3>
+                                @if (!string.IsNullOrEmpty(item.Flavor) || !string.IsNullOrEmpty(item.Size))
+                                {
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                                        @if (!string.IsNullOrEmpty(item.Flavor))
+                                        {
+                                            <span>@item.Flavor</span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(item.Size))
+                                        {
+                                            <span>• @item.Size</span>
+                                        }
+                                    </p>
+                                }
+                                <p class="text-sm font-semibold text-primary-600 dark:text-primary-400">$@item.UnitPrice.ToString("F2") each</p>
+                            </div>
+
+                            <!-- Quantity & Actions -->
+                            <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-4">
+                                <form method="post" action="/Cart/UpdateQuantity/@item.Id" class="flex items-center">
+                                    <input type="hidden" name="cartItemId" value="@item.Id" />
+                                    <div class="flex items-center border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                                        <button type="submit" name="quantity" value="@(item.Quantity - 1)" class="px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-base font-bold">−</button>
+                                        <span class="px-4 py-2 text-sm font-bold text-gray-900 dark:text-white border-x-2 border-gray-200 dark:border-gray-700 min-w-[3rem] text-center">@item.Quantity</span>
+                                        <button type="submit" name="quantity" value="@(item.Quantity + 1)" class="px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-base font-bold">+</button>
+                                    </div>
+                                </form>
+
+                                <div class="flex items-center gap-4">
+                                    <p class="text-xl font-bold text-gray-900 dark:text-white">$@item.TotalPrice.ToString("F2")</p>
+                                    <form method="post" action="/Cart/RemoveFromCart/@item.Id">
+                                        <button type="submit" class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-base">
+                                            <span class="material-icons">delete</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Order Summary -->
+            <div class="lg:col-span-1">
+                <div class="card sticky top-24">
+                    <div class="p-6 bg-gradient-to-br from-primary-50 to-white dark:from-primary-900/10 dark:to-gray-900 border-b border-gray-200 dark:border-gray-800">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Order Summary</h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 dark:text-gray-400">Subtotal (@Model.ItemCount items)</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">$@Model.TotalPrice.ToString("F2")</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 dark:text-gray-400">Shipping</span>
+                            <span class="font-medium text-gray-700 dark:text-gray-300">Calculated at checkout</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 dark:text-gray-400">Tax</span>
+                            <span class="font-medium text-gray-700 dark:text-gray-300">Calculated at checkout</span>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-gray-900 dark:text-white">Total</span>
+                            <span class="text-2xl font-bold text-primary-600 dark:text-primary-400">$@Model.TotalPrice.ToString("F2")</span>
+                        </div>
+
+                        <a href="/Checkout" class="btn btn-primary w-full">
+                            <span class="material-icons">shopping_bag</span>
+                            Proceed to Checkout
+                        </a>
+
+                        <a href="/Shop" class="btn btn-outline w-full">
+                            <span class="material-icons">arrow_back</span>
+                            Continue Shopping
+                        </a>
+
+                        <!-- Trust Badges -->
+                        <div class="pt-4 space-y-3">
+                            <div class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                                <span class="material-icons text-primary-600 dark:text-primary-400">verified</span>
+                                <span>Secure checkout</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                                <span class="material-icons text-primary-600 dark:text-primary-400">local_shipping</span>
+                                <span>Free shipping over $50</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                                <span class="material-icons text-primary-600 dark:text-primary-400">replay</span>
+                                <span>Easy returns</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

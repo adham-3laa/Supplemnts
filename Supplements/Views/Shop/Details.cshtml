@@ -1,0 +1,225 @@
+@model Supplements.ViewModels.Shop.ProductDetailViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="max-w-7xl mx-auto">
+    <partial name="_Breadcrumb" />
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+        <!-- Image Gallery -->
+        <div class="animate-slide-up">
+            <div class="relative aspect-square bg-gray-100 dark:bg-gray-800 rounded-2xl overflow-hidden mb-4 shadow-lg">
+                @if (!string.IsNullOrEmpty(Model.MainImageUrl))
+                {
+                    <img id="mainImage" src="@Model.MainImageUrl" alt="@Model.Name" class="w-full h-full object-cover" />
+                }
+                else
+                {
+                    <div class="flex items-center justify-center h-full">
+                        <span class="material-icons text-8xl text-gray-300 dark:text-gray-600">image</span>
+                    </div>
+                }
+
+                @if (Model.HasDiscount)
+                {
+                    <span class="absolute top-4 left-4 bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg">
+                        -@Model.DiscountPercentage% OFF
+                    </span>
+                }
+
+                @if (!Model.InStock)
+                {
+                    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+                        <span class="bg-white/90 dark:bg-gray-900/90 text-gray-900 dark:text-white px-6 py-3 rounded-xl font-bold text-lg shadow-xl">
+                            Out of Stock
+                        </span>
+                    </div>
+                }
+            </div>
+
+            @if (Model.Images.Any() || !string.IsNullOrEmpty(Model.MainImageUrl))
+            {
+                <div class="flex gap-3 overflow-x-auto pb-2">
+                    @if (!string.IsNullOrEmpty(Model.MainImageUrl))
+                    {
+                        <img src="@Model.MainImageUrl"
+                             onclick="document.getElementById('mainImage').src=this.src"
+                             class="w-20 h-20 object-cover rounded-xl border-2 border-primary-500 cursor-pointer hover:opacity-80 transition-base flex-shrink-0" />
+                    }
+                    @foreach (var img in Model.Images)
+                    {
+                        <img src="@img.ImageUrl"
+                             onclick="document.getElementById('mainImage').src=this.src"
+                             class="w-20 h-20 object-cover rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary-500 cursor-pointer hover:opacity-80 transition-base flex-shrink-0" />
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Product Info -->
+        <div class="animate-slide-up">
+            <p class="text-sm font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider mb-2">@Model.BrandName</p>
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">@Model.Name</h1>
+
+            <!-- Price -->
+            <div class="flex items-baseline gap-3 mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                @if (Model.HasDiscount)
+                {
+                    <span class="text-4xl font-bold text-primary-600 dark:text-primary-400">$@Model.FinalPrice.ToString("F2")</span>
+                    <span class="text-xl text-gray-400 line-through">$@Model.Price.ToString("F2")</span>
+                    <span class="badge badge-danger">Save $@Model.SavedAmount.ToString("F2")</span>
+                }
+                else
+                {
+                    <span class="text-4xl font-bold text-gray-900 dark:text-white">$@Model.Price.ToString("F2")</span>
+                }
+            </div>
+
+            <!-- Description -->
+            <p class="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed text-lg">@Model.Description</p>
+
+            <!-- Variants -->
+            @if (Model.Variants.Any())
+            {
+                <div class="mb-8">
+                    <label class="block text-sm font-bold text-gray-900 dark:text-white mb-3">Select Options</label>
+                    <div class="flex flex-wrap gap-3" id="variantOptions">
+                        @foreach (var variant in Model.Variants)
+                        {
+                            <button type="button"
+                                    data-variant-id="@variant.Id"
+                                    data-price="@(Model.Price + variant.AdditionalPrice)"
+                                    data-stock="@variant.StockQuantity"
+                                    onclick="selectVariant(this)"
+                                    class="px-5 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium hover:border-primary-500 dark:hover:border-primary-500 transition-base @(variant.InStock ? "" : "opacity-50 cursor-not-allowed")"
+                                    @(variant.InStock ? "" : "disabled")>
+                                <div class="text-gray-900 dark:text-white">@variant.Flavor @variant.Size</div>
+                                @if (variant.AdditionalPrice > 0)
+                                {
+                                    <div class="text-xs text-primary-600 dark:text-primary-400 mt-1">+$@variant.AdditionalPrice.ToString("F2")</div>
+                                }
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Quantity & Stock -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-8">
+                <div>
+                    <label class="block text-sm font-bold text-gray-900 dark:text-white mb-3">Quantity</label>
+                    <div class="flex items-center border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                        <button type="button" class="qty-minus px-4 py-3 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-base font-bold">−</button>
+                        <input type="number"
+                               id="quantityInput"
+                               value="1"
+                               min="1"
+                               max="@Model.StockQuantity"
+                               class="qty-input w-20 text-center border-x-2 border-gray-200 dark:border-gray-700 py-3 bg-transparent text-gray-900 dark:text-gray-100 font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                        <button type="button" class="qty-plus px-4 py-3 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-base font-bold">+</button>
+                    </div>
+                </div>
+
+                <div class="pt-0 sm:pt-6">
+                    @if (Model.InStock)
+                    {
+                        <span class="inline-flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-xl font-medium">
+                            <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span>
+                            In Stock (@Model.StockQuantity available)
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-xl font-medium">
+                            <span class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                            Out of Stock
+                        </span>
+                    }
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3 mb-8">
+                <form method="post" asp-controller="Cart" asp-action="AddToCart" class="flex-1">
+                    <input type="hidden" name="productVariantId" id="selectedVariantId" value="@Model.Variants.FirstOrDefault()?.Id" />
+                    <input type="hidden" name="quantity" id="addToCartQuantity" value="1" />
+                    <button type="submit"
+                            class="btn btn-primary btn-lg w-full @(Model.InStock && Model.Variants.Any() ? "" : "opacity-50 cursor-not-allowed")"
+                            @(Model.InStock && Model.Variants.Any() ? "" : "disabled")>
+                        <span class="material-icons">shopping_cart</span>
+                        Add to Cart
+                    </button>
+                </form>
+                <form method="post" action="/Wishlist/Add/@Model.Id">
+                    <button type="submit"
+                            class="btn btn-lg p-3 border-2 border-gray-200 dark:border-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-800">
+                        <span class="material-icons">favorite_border</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Product Meta -->
+            <div class="card card-body bg-gray-50 dark:bg-gray-800">
+                <h3 class="font-bold text-gray-900 dark:text-white mb-4">Product Information</h3>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div class="flex items-start gap-3">
+                        <span class="material-icons text-primary-600 dark:text-primary-400 text-lg">category</span>
+                        <div>
+                            <span class="block text-gray-500 dark:text-gray-400 text-xs mb-1">Category</span>
+                            <a href="/Shop?categoryId=@Model.CategoryId" class="font-semibold text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-base">@Model.CategoryName</a>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="material-icons text-primary-600 dark:text-primary-400 text-lg">branding_watermark</span>
+                        <div>
+                            <span class="block text-gray-500 dark:text-gray-400 text-xs mb-1">Brand</span>
+                            <a href="/Shop?brandId=@Model.BrandId" class="font-semibold text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-base">@Model.BrandName</a>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="material-icons text-primary-600 dark:text-primary-400 text-lg">store</span>
+                        <div>
+                            <span class="block text-gray-500 dark:text-gray-400 text-xs mb-1">Seller</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">@Model.SellerName</span>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="material-icons text-primary-600 dark:text-primary-400 text-lg">schedule</span>
+                        <div>
+                            <span class="block text-gray-500 dark:text-gray-400 text-xs mb-1">Added</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">@Model.CreatedAt.ToString("MMM dd, yyyy")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let selectedVariantId = '@Model.Variants.FirstOrDefault()?.Id';
+        function selectVariant(btn) {
+            document.querySelectorAll('#variantOptions button').forEach(b => {
+                b.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-900/20', 'shadow-md');
+                b.classList.add('border-gray-200', 'dark:border-gray-700');
+            });
+            btn.classList.remove('border-gray-200', 'dark:border-gray-700');
+            btn.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-900/20', 'shadow-md');
+            selectedVariantId = btn.dataset.variantId;
+            document.getElementById('selectedVariantId').value = selectedVariantId;
+        }
+        document.getElementById('quantityInput')?.addEventListener('change', function() {
+            document.getElementById('addToCartQuantity').value = this.value;
+        });
+        document.querySelectorAll('.qty-minus, .qty-plus').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.getElementById('addToCartQuantity').value = document.getElementById('quantityInput').value;
+            });
+        });
+        if (document.querySelector('#variantOptions button')) {
+            document.querySelector('#variantOptions button').click();
+        }
+    </script>
+}

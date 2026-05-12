@@ -1,0 +1,71 @@
+@model List<Supplements.Core.Entities.Order>
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Orders</h1>
+        <div class="flex items-center gap-2">
+            <a href="/Admin/Orders" class="btn btn-sm @(string.IsNullOrEmpty(ViewBag.Status) ? "btn-primary" : "btn-secondary")">All</a>
+            @foreach (var s in ViewBag.Statuses)
+            {
+                <a href="/Admin/Orders?status=@s" class="btn btn-sm @(ViewBag.Status == s ? "btn-primary" : "btn-secondary")">@s</a>
+            }
+        </div>
+    </div>
+
+    <div class="card overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                        <th class="text-left px-4 py-3 font-semibold">Order ID</th>
+                        <th class="text-left px-4 py-3 font-semibold">Customer</th>
+                        <th class="text-left px-4 py-3 font-semibold">Date</th>
+                        <th class="text-right px-4 py-3 font-semibold">Total</th>
+                        <th class="text-center px-4 py-3 font-semibold">Status</th>
+                        <th class="text-right px-4 py-3 font-semibold">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    @foreach (var order in Model)
+                    {
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                            <td class="px-4 py-3 font-mono text-xs text-gray-600 dark:text-gray-400">@order.Id.ToString("N")</td>
+                            <td class="px-4 py-3">
+                                <span class="font-medium text-gray-900 dark:text-white">@order.User.FullName</span>
+                            </td>
+                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400">@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                            <td class="px-4 py-3 text-right font-semibold text-gray-900 dark:text-white">$@order.TotalPrice.ToString("N2")</td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="badge @(order.Status switch { "Delivered" => "badge-success", "Cancelled" => "badge-danger", "Pending" => "badge-warning", "Processing" => "badge-info", "Shipped" => "badge-primary", _ => "badge-info" })">@order.Status</span>
+                            </td>
+                            <td class="px-4 py-3 text-right">
+                                <a href="/Admin/Orders/Details/@order.Id" class="btn btn-sm btn-secondary">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav class="flex items-center justify-center gap-2 mt-8">
+            @if (ViewBag.Page > 1)
+            {
+                <a href="?page=@(ViewBag.Page - 1)&status=@ViewBag.Status" class="btn btn-secondary btn-sm">Previous</a>
+            }
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <a href="?page=@i&status=@ViewBag.Status" class="btn btn-sm @(i == ViewBag.Page ? "btn-primary" : "btn-secondary")">@i</a>
+            }
+            @if (ViewBag.Page < ViewBag.TotalPages)
+            {
+                <a href="?page=@(ViewBag.Page + 1)&status=@ViewBag.Status" class="btn btn-secondary btn-sm">Next</a>
+            }
+        </nav>
+    }
+</div>

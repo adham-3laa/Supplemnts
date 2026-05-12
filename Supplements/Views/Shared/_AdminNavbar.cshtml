@@ -1,0 +1,47 @@
+@using System.Security.Claims
+<nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-30">
+    <div class="flex items-center justify-between h-16 px-4 lg:px-6">
+        <div class="flex items-center gap-4">
+            <button id="sidebarToggle" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-base">
+                <span class="material-icons text-gray-600 dark:text-gray-400">menu</span>
+            </button>
+            <a href="/Admin" class="flex items-center gap-2">
+                <span class="material-icons text-primary-600 text-2xl">admin_panel_settings</span>
+                <span class="text-lg font-bold text-gray-900 dark:text-white">Admin Panel</span>
+            </a>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button id="darkModeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-base">
+                <span class="material-icons text-gray-600 dark:text-gray-400">dark_mode</span>
+            </button>
+
+            <a href="/" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-base" title="View Store">
+                <span class="material-icons text-gray-600 dark:text-gray-400">store</span>
+            </a>
+
+            <div class="relative dropdown">
+                <button class="dropdown-toggle flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-base">
+                    <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                        <span class="material-icons text-primary-600 dark:text-primary-400 text-lg">person</span>
+                    </div>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 hidden md:block">@User.Identity!.Name</span>
+                </button>
+                <div class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                    <a href="/Profile" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-base">
+                        <span class="material-icons text-lg">person</span> Profile
+                    </a>
+                    <a href="/" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-base">
+                        <span class="material-icons text-lg">store</span> View Store
+                    </a>
+                    <div class="border-t border-gray-200 dark:border-gray-700"></div>
+                    <form action="/Account/Logout" method="post">
+                        <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-base">
+                            <span class="material-icons text-lg">logout</span> Sign Out
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

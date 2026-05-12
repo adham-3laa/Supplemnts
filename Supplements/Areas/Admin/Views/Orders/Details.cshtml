@@ -1,0 +1,106 @@
+@model Supplements.Core.Entities.Order
+@{
+    ViewData["Title"] = $"Order {Model.Id.ToString("N")}";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Order Details</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-mono">#@Model.Id.ToString("N")</p>
+        </div>
+        <span class="badge text-base px-4 py-2 @(Model.Status switch { "Delivered" => "badge-success", "Cancelled" => "badge-danger", "Pending" => "badge-warning", "Processing" => "badge-info", "Shipped" => "badge-primary", _ => "badge-info" })">@Model.Status</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-6">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Order Items</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                                    <th class="text-left px-4 py-3 font-semibold">Product</th>
+                                    <th class="text-center px-4 py-3 font-semibold">Qty</th>
+                                    <th class="text-right px-4 py-3 font-semibold">Unit Price</th>
+                                    <th class="text-right px-4 py-3 font-semibold">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <p class="font-medium text-gray-900 dark:text-white">@item.ProductVariant.Product.Name</p>
+                                            <p class="text-xs text-gray-500">@item.ProductVariant.Flavor - @item.ProductVariant.Size</p>
+                                        </td>
+                                        <td class="px-4 py-3 text-center text-gray-600 dark:text-gray-400">@item.Quantity</td>
+                                        <td class="px-4 py-3 text-right text-gray-600 dark:text-gray-400">$@item.UnitPrice.ToString("N2")</td>
+                                        <td class="px-4 py-3 text-right font-semibold text-gray-900 dark:text-white">$@item.TotalPrice.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="bg-gray-50 dark:bg-gray-800 font-semibold">
+                                    <td colspan="3" class="px-4 py-3 text-right text-gray-600 dark:text-gray-400">Shipping</td>
+                                    <td class="px-4 py-3 text-right text-gray-900 dark:text-white">$@Model.ShippingCost.ToString("N2")</td>
+                                </tr>
+                                <tr class="bg-gray-50 dark:bg-gray-800 font-semibold text-lg">
+                                    <td colspan="3" class="px-4 py-3 text-right text-gray-900 dark:text-white">Total</td>
+                                    <td class="px-4 py-3 text-right text-gray-900 dark:text-white">$@Model.TotalPrice.ToString("N2")</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Customer</h4>
+                    <p class="font-medium text-gray-900 dark:text-white">@Model.User.FullName</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">@Model.User.Email</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Shipping Address</h4>
+                    <p class="text-sm text-gray-900 dark:text-white">@Model.Address.Street</p>
+                    <p class="text-sm text-gray-900 dark:text-white">@Model.Address.City</p>
+                    <p class="text-sm text-gray-900 dark:text-white">@Model.Address.Country</p>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Notes))
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Notes</h4>
+                        <p class="text-sm text-gray-900 dark:text-white">@Model.Notes</p>
+                    </div>
+                </div>
+            }
+
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Update Status</h4>
+                    <form method="post" action="/Admin/Orders/UpdateStatus/@Model.Id" class="space-y-3">
+                        @Html.AntiForgeryToken()
+                        <select name="status" class="input">
+                            <option value="Pending" selected="@(Model.Status == "Pending")">Pending</option>
+                            <option value="Processing" selected="@(Model.Status == "Processing")">Processing</option>
+                            <option value="Shipped" selected="@(Model.Status == "Shipped")">Shipped</option>
+                            <option value="Delivered" selected="@(Model.Status == "Delivered")">Delivered</option>
+                            <option value="Cancelled" selected="@(Model.Status == "Cancelled")">Cancelled</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary w-full">Update Status</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

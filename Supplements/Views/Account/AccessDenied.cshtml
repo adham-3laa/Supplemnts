@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "Access Denied";
+    Layout = "_Layout";
+}
+<div class="flex flex-col items-center justify-center py-20 text-center animate-scale-in">
+    <div class="w-32 h-32 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/30 dark:to-red-800/30 rounded-3xl flex items-center justify-center mb-8 shadow-xl">
+        <span class="material-icons text-6xl text-red-600 dark:text-red-400">block</span>
+    </div>
+
+    <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">Access Denied</h1>
+
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-md">
+        You don't have permission to access this page. If you believe this is a mistake, please contact the administrator.
+    </p>
+
+    <div class="flex flex-wrap gap-3 justify-center">
+        <a href="/" class="btn btn-primary">
+            <span class="material-icons">home</span>
+            Go Home
+        </a>
+        <a href="/Account/Login" class="btn btn-outline">
+            <span class="material-icons">login</span>
+            Sign In
+        </a>
+    </div>
+</div>

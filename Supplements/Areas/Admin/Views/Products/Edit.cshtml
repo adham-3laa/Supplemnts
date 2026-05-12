@@ -1,0 +1,123 @@
+@model Supplements.Core.Entities.Product
+@{
+    ViewData["Title"] = "Edit Product";
+    var variantIndex = 0;
+}
+
+<div class="max-w-2xl">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Edit Product</h1>
+
+    <form method="post" class="card">
+        @Html.AntiForgeryToken()
+        <div class="card-body space-y-5">
+            <input type="hidden" asp-for="Id" />
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Name</label>
+                <input asp-for="Name" class="input" required />
+                <span asp-validation-for="Name" class="text-sm text-red-600 dark:text-red-400"></span>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Description</label>
+                <textarea asp-for="Description" class="input" rows="4"></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Price</label>
+                    <input asp-for="Price" class="input" type="number" step="0.01" required />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Discount (%)</label>
+                    <input asp-for="DiscountPercentage" class="input" type="number" step="0.01" />
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Stock Quantity</label>
+                    <input asp-for="StockQuantity" class="input" type="number" required />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Main Image URL</label>
+                    <input asp-for="MainImageUrl" class="input" />
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Category</label>
+                    <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="input" required>
+                        <option value="">Select category</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Brand</label>
+                    <select asp-for="BrandId" asp-items="ViewBag.Brands" class="input" required>
+                        <option value="">Select brand</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <input asp-for="IsActive" class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+                <label asp-for="IsActive" class="text-sm text-gray-700 dark:text-gray-300">Active</label>
+            </div>
+
+            <!-- Variants -->
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <label class="block text-sm font-bold text-gray-900 dark:text-white">Variants</label>
+                    <button type="button" onclick="addVariant()" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">+ Add Variant</button>
+                </div>
+                <div id="variantsContainer">
+                    @foreach (var variant in Model.Variants)
+                    {
+                        <div class="variant-row grid grid-cols-5 gap-3 mb-2 items-start">
+                            <input type="hidden" name="Variants[@variantIndex].Id" value="@variant.Id" />
+                            <input name="Variants[@variantIndex].Flavor" value="@variant.Flavor" placeholder="Flavor" class="input" />
+                            <input name="Variants[@variantIndex].Size" value="@variant.Size" placeholder="Size" class="input" />
+                            <input name="Variants[@variantIndex].AdditionalPrice" value="@variant.AdditionalPrice" placeholder="Extra $" type="number" step="0.01" class="input" />
+                            <div class="flex gap-2">
+                                <input name="Variants[@variantIndex].StockQuantity" value="@variant.StockQuantity" placeholder="Stock" type="number" class="input flex-1" />
+                                <button type="button" onclick="markForRemove(this)" class="text-red-500 hover:text-red-700 px-2">✕</button>
+                            </div>
+                        </div>
+                        variantIndex++;
+                    }
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 pt-4">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="/Admin/Products" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        let variantIndex = @variantIndex;
+        function addVariant() {
+            const container = document.getElementById('variantsContainer');
+            const row = document.createElement('div');
+            row.className = 'variant-row grid grid-cols-5 gap-3 mb-2 items-start';
+            row.innerHTML =
+                `<input type="hidden" name="Variants[${variantIndex}].Id" value="00000000-0000-0000-0000-000000000000" />` +
+                `<input name="Variants[${variantIndex}].Flavor" placeholder="Flavor" class="input" />` +
+                `<input name="Variants[${variantIndex}].Size" placeholder="Size" class="input" />` +
+                `<input name="Variants[${variantIndex}].AdditionalPrice" placeholder="Extra $" type="number" step="0.01" class="input" />` +
+                `<div class="flex gap-2"><input name="Variants[${variantIndex}].StockQuantity" placeholder="Stock" type="number" class="input flex-1" /><button type="button" onclick="markForRemove(this)" class="text-red-500 hover:text-red-700 px-2">✕</button></div>`;
+            container.appendChild(row);
+            variantIndex++;
+        }
+        function markForRemove(btn) {
+            const row = btn.closest('.variant-row');
+            const idInput = row.querySelector('input[name$=".Id"]');
+            if (idInput && idInput.value !== '00000000-0000-0000-0000-000000000000') {
+                const del = document.createElement('input');
+                del.type = 'hidden';
+                del.name = 'RemovedVariantIds';
+                del.value = idInput.value;
+                row.parentNode.appendChild(del);
+            }
+            row.remove();
+        }
+    </script>
+}

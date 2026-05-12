@@ -1,0 +1,222 @@
+@inject CartService _cartService
+@using System.Security.Claims
+@using Supplements.Services
+@{
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var cartItemCount = 0;
+    if (userId != null)
+    {
+        var cartResult = await _cartService.GetCart(Guid.Parse(userId));
+        if (cartResult.IsSuccess)
+        {
+            cartItemCount = cartResult.Data!.Items.Count;
+        }
+    }
+}
+
+<nav class="sticky top-0 z-50 glass shadow-sm">
+    <div class="container-custom">
+        <div class="flex items-center justify-between h-20">
+            <!-- Logo & Main Nav -->
+            <div class="flex items-center gap-10">
+                <a href="/" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                        <span class="material-icons text-white text-2xl">fitness_center</span>
+                    </div>
+                    <div class="hidden sm:block">
+                        <span class="text-xl font-bold gradient-text">SupplementsStore</span>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 -mt-1">Premium Quality</p>
+                    </div>
+                </a>
+
+                <div class="hidden lg:flex items-center gap-1">
+                    <a href="/Shop" class="nav-link">
+                        <span class="material-icons text-lg">inventory_2</span>
+                        Products
+                    </a>
+                    <a href="/Shop?category=protein" class="nav-link">
+                        <span class="material-icons text-lg">sports_gymnastics</span>
+                        Protein
+                    </a>
+                    <a href="/Shop?category=vitamins" class="nav-link">
+                        <span class="material-icons text-lg">medication</span>
+                        Vitamins
+                    </a>
+                    <a href="/Home/About" class="nav-link">
+                        <span class="material-icons text-lg">info</span>
+                        About
+                    </a>
+                </div>
+            </div>
+
+            <!-- Search & Actions -->
+            <div class="flex items-center gap-2">
+                <!-- Search Bar -->
+                <form action="/Shop" method="get" class="hidden md:block">
+                    <div class="relative group">
+                        <span class="material-icons absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary-600 transition-colors text-lg">search</span>
+                        <input type="search"
+                               name="searchTerm"
+                               placeholder="Search supplements..."
+                               class="w-64 lg:w-80 pl-11 pr-4 py-2.5 text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent focus:bg-white dark:focus:bg-gray-800 outline-none transition-all duration-200" />
+                    </div>
+                </form>
+
+                <!-- Dark Mode Toggle -->
+                <button id="darkModeToggle" class="icon-btn hidden md:flex" title="Toggle dark mode">
+                    <span class="material-icons">dark_mode</span>
+                </button>
+
+                <!-- Wishlist -->
+                <a href="/Wishlist" class="icon-btn" title="Wishlist">
+                    <span class="material-icons">favorite_border</span>
+                </a>
+
+                <!-- Cart -->
+                <a href="/Cart" class="icon-btn relative" title="Shopping cart">
+                    <span class="material-icons">shopping_cart</span>
+                    @if (cartItemCount > 0)
+                    {
+                        <span class="absolute -top-1 -right-1 bg-gradient-to-br from-primary-600 to-primary-700 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-semibold shadow-lg animate-scale-in">@cartItemCount</span>
+                    }
+                </a>
+
+                @if (User.Identity!.IsAuthenticated)
+                {
+                    <!-- User Dropdown -->
+                    <div class="relative dropdown">
+                        <button class="dropdown-toggle flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-base">
+                            <div class="w-9 h-9 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center shadow-md">
+                                <span class="material-icons text-white text-lg">person</span>
+                            </div>
+                            <div class="hidden lg:block text-left">
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white leading-tight">@User.Identity.Name</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">My Account</p>
+                            </div>
+                            <span class="material-icons text-gray-400 text-lg hidden lg:block">expand_more</span>
+                        </button>
+
+                        <div class="dropdown-menu hidden absolute right-0 mt-3 w-72 glass rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 py-2 animate-slide-down">
+                            <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-800">
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white">@User.Identity.Name</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">@User.FindFirstValue(ClaimTypes.Email)</p>
+                            </div>
+
+                            <div class="py-2">
+                                <a href="/Profile" class="dropdown-item">
+                                    <span class="material-icons text-lg">person</span>
+                                    <span>My Profile</span>
+                                </a>
+                                <a href="/Order" class="dropdown-item">
+                                    <span class="material-icons text-lg">receipt_long</span>
+                                    <span>My Orders</span>
+                                </a>
+                                <a href="/Wishlist" class="dropdown-item">
+                                    <span class="material-icons text-lg">favorite</span>
+                                    <span>Wishlist</span>
+                                </a>
+                            </div>
+
+                            @if (User.IsInRole("Admin") || User.IsInRole("Seller"))
+                            {
+                                <div class="border-t border-gray-200 dark:border-gray-800 py-2">
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a href="/Admin" class="dropdown-item">
+                                            <span class="material-icons text-lg">admin_panel_settings</span>
+                                            <span>Admin Dashboard</span>
+                                        </a>
+                                    }
+                                    @if (User.IsInRole("Seller"))
+                                    {
+                                        <a href="/Seller" class="dropdown-item">
+                                            <span class="material-icons text-lg">store</span>
+                                            <span>Seller Dashboard</span>
+                                        </a>
+                                    }
+                                </div>
+                            }
+
+                            <div class="border-t border-gray-200 dark:border-gray-800 py-2">
+                                <form action="/Account/Logout" method="post">
+                                    <button type="submit" class="dropdown-item text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 w-full">
+                                        <span class="material-icons text-lg">logout</span>
+                                        <span>Sign Out</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <a href="/Account/Login" class="hidden md:inline-flex btn btn-outline btn-sm">
+                        Sign In
+                    </a>
+                    <a href="/Account/Register" class="btn btn-primary btn-sm">
+                        Get Started
+                    </a>
+                }
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn" class="lg:hidden icon-btn">
+                    <span class="material-icons">menu</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden lg:hidden border-t border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl animate-slide-down">
+        <div class="container-custom py-4 space-y-3">
+            <!-- Mobile Search -->
+            <form action="/Shop" method="get">
+                <div class="relative">
+                    <span class="material-icons absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                    <input type="search"
+                           name="searchTerm"
+                           placeholder="Search supplements..."
+                           class="w-full pl-11 pr-4 py-3 text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none" />
+                </div>
+            </form>
+
+            <!-- Mobile Nav Links -->
+            <div class="space-y-1">
+                <a href="/Shop" class="mobile-nav-link">
+                    <span class="material-icons">inventory_2</span>
+                    <span>All Products</span>
+                </a>
+                <a href="/Shop?category=protein" class="mobile-nav-link">
+                    <span class="material-icons">sports_gymnastics</span>
+                    <span>Protein</span>
+                </a>
+                <a href="/Shop?category=vitamins" class="mobile-nav-link">
+                    <span class="material-icons">medication</span>
+                    <span>Vitamins</span>
+                </a>
+                <a href="/Home/About" class="mobile-nav-link">
+                    <span class="material-icons">info</span>
+                    <span>About Us</span>
+                </a>
+                <a href="/Home/Contact" class="mobile-nav-link">
+                    <span class="material-icons">contact_support</span>
+                    <span>Contact</span>
+                </a>
+                <button id="mobileDarkModeToggle" class="mobile-nav-link w-full">
+                    <span class="material-icons">dark_mode</span>
+                    <span>Dark Mode</span>
+                </button>
+            </div>
+
+            @if (!User.Identity!.IsAuthenticated)
+            {
+                <div class="pt-3 border-t border-gray-200 dark:border-gray-800 flex gap-2">
+                    <a href="/Account/Login" class="btn btn-outline flex-1">Sign In</a>
+                    <a href="/Account/Register" class="btn btn-primary flex-1">Register</a>
+                </div>
+            }
+        </div>
+    </div>
+</nav>
+
+

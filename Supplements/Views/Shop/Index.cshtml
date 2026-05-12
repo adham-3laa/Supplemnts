@@ -1,0 +1,139 @@
+@model Supplements.ViewModels.Shop.ProductListViewModel
+@{
+    ViewData["Title"] = string.IsNullOrEmpty(Model.SearchTerm) ? "Products" : $"Search: {Model.SearchTerm}";
+    var sortOptions = new Dictionary<string, string>
+    {
+        { "newest", "Newest First" },
+        { "price_asc", "Price: Low to High" },
+        { "price_desc", "Price: High to Low" },
+        { "name_asc", "Name: A to Z" },
+        { "name_desc", "Name: Z to A" }
+    };
+}
+
+<div class="flex flex-col lg:flex-row gap-8">
+    <!-- Sidebar Filters -->
+    <aside class="lg:w-72 shrink-0">
+        <div class="card sticky top-24 overflow-hidden">
+            <div class="p-6 bg-gradient-to-br from-primary-50 to-white dark:from-primary-900/10 dark:to-gray-900 border-b border-gray-200 dark:border-gray-800">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <span class="material-icons text-primary-600 dark:text-primary-400">tune</span>
+                    Filters
+                </h3>
+            </div>
+
+            <form method="get" action="/Shop" id="filterForm" class="p-6 space-y-6">
+                @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                {
+                    <input type="hidden" name="searchTerm" value="@Model.SearchTerm" />
+                }
+                <input type="hidden" name="sortBy" id="sortByInput" value="@Model.SortBy" />
+
+                <!-- Categories -->
+                <div>
+                    <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                        <span class="material-icons text-lg">category</span>
+                        Categories
+                    </h4>
+                    <div class="space-y-1.5">
+                        <a href="/Shop@(Model.SearchTerm != null ? "?searchTerm=" + Model.SearchTerm : "")"
+                           class="block px-3 py-2 text-sm rounded-lg transition-base @(Model.CategoryId == null ? "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-semibold" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white")">
+                            All Categories
+                        </a>
+                        @foreach (var cat in Model.Categories)
+                        {
+                            <a href="@Url.Action("Index", new { searchTerm = Model.SearchTerm, categoryId = cat.Id, brandId = Model.BrandId })"
+                               class="block px-3 py-2 text-sm rounded-lg transition-base @(Model.CategoryId == cat.Id ? "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-semibold" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white")">
+                                <span class="flex items-center justify-between">
+                                    <span>@cat.Name</span>
+                                    <span class="text-xs opacity-60">@cat.ProductCount</span>
+                                </span>
+                            </a>
+                        }
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Brands -->
+                <div>
+                    <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                        <span class="material-icons text-lg">branding_watermark</span>
+                        Brands
+                    </h4>
+                    <div class="space-y-1.5">
+                        <a href="/Shop@(Model.SearchTerm != null ? "?searchTerm=" + Model.SearchTerm : "")"
+                           class="block px-3 py-2 text-sm rounded-lg transition-base @(Model.BrandId == null ? "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-semibold" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white")">
+                            All Brands
+                        </a>
+                        @foreach (var brand in Model.Brands)
+                        {
+                            <a href="@Url.Action("Index", new { searchTerm = Model.SearchTerm, categoryId = Model.CategoryId, brandId = brand.Id })"
+                               class="block px-3 py-2 text-sm rounded-lg transition-base @(Model.BrandId == brand.Id ? "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-semibold" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white")">
+                                <span class="flex items-center justify-between">
+                                    <span>@brand.Name</span>
+                                    <span class="text-xs opacity-60">@brand.ProductCount</span>
+                                </span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 min-w-0">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div>
+                @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                {
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                        Search Results
+                    </h1>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        <span class="font-medium text-gray-900 dark:text-white">@Model.Products.TotalCount</span> results for "<span class="text-primary-600 dark:text-primary-400">@Model.SearchTerm</span>"
+                    </p>
+                }
+                else
+                {
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">All Products</h1>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Showing <span class="font-medium text-gray-900 dark:text-white">@Model.Products.TotalCount</span> products
+                    </p>
+                }
+            </div>
+
+            <!-- Sort Dropdown -->
+            <div class="flex items-center gap-3">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:block">Sort by:</label>
+                <select onchange="window.location.href=this.value"
+                        class="input text-sm py-2 pr-10 cursor-pointer">
+                    @foreach (var opt in sortOptions)
+                    {
+                        var url = Url.Action("Index", new { searchTerm = Model.SearchTerm, categoryId = Model.CategoryId, brandId = Model.BrandId, sortBy = opt.Key });
+                        <option value="@url" selected="@(Model.SortBy == opt.Key ? true : null)">@opt.Value</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        @if (!Model.Products.Items.Any())
+        {
+            <partial name="_EmptyState" view-data='new ViewDataDictionary(ViewData) { { "EmptyIcon", "search_off" }, { "EmptyTitle", "No products found" }, { "EmptyMessage", "Try adjusting your filters or search term to find what you need." }, { "EmptyActionText", "Clear Filters" }, { "EmptyActionUrl", "/Shop" } }' />
+        }
+        else
+        {
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 animate-fade-in">
+                @foreach (var product in Model.Products.Items)
+                {
+                    <partial name="_ProductCard" model="product" />
+                }
+            </div>
+
+            <partial name="_Pagination" model="Model.Products" />
+        }
+    </div>
+</div>

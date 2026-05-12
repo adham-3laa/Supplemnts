@@ -1,0 +1,11 @@
+{
+  "name": "supplements",
+  "version": "1.0.0",
+  "scripts": {
+    "build:css": "tailwindcss -i ./Styles/input.css -o ./wwwroot/css/site.css --minify",
+    "watch:css": "tailwindcss -i ./Styles/input.css -o ./wwwroot/css/site.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}

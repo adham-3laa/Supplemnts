@@ -1,0 +1,114 @@
+@model List<Supplements.Core.Entities.Brand>
+@{
+    ViewData["Title"] = "Brands";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Brands</h1>
+        <button onclick="document.getElementById('createModal').classList.remove('hidden')" class="btn btn-primary">
+            <span class="material-icons text-lg">add</span> Add Brand
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        @foreach (var brand in Model)
+        {
+            <div class="card">
+                <div class="card-body">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center gap-3">
+                            @if (!string.IsNullOrEmpty(brand.LogoUrl))
+                            {
+                                <img src="@brand.LogoUrl" alt="@brand.Name" class="w-12 h-12 rounded-xl object-contain bg-gray-50 dark:bg-gray-800" />
+                            }
+                            else
+                            {
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/30 dark:to-primary-800/30 flex items-center justify-center">
+                                    <span class="material-icons text-2xl text-primary-600 dark:text-primary-400">branding_watermark</span>
+                                </div>
+                            }
+                            <div>
+                                <h3 class="font-semibold text-gray-900 dark:text-white">@brand.Name</h3>
+                                <p class="text-xs text-gray-400">@brand.Products.Count(p => !p.IsDeleted) products</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button onclick="editBrand(@brand.Id, '@brand.Name', '@(brand.LogoUrl ?? "")')" class="icon-btn" title="Edit">
+                                <span class="material-icons text-lg">edit</span>
+                            </button>
+                            <form method="post" action="/Admin/Brands/Delete/@brand.Id" onsubmit="return confirmDelete()" class="inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="icon-btn text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20" title="Delete">
+                                    <span class="material-icons text-lg">delete</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (!Model.Any())
+        {
+            <div class="sm:col-span-2 lg:col-span-3">
+                <partial name="_EmptyState" view-data='new ViewDataDictionary(ViewData) { { "EmptyIcon", "branding_watermark" }, { "EmptyTitle", "No brands yet" }, { "EmptyMessage", "Add brands to help organize your products." } }' />
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Create Modal -->
+<div id="createModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-fade-in">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md animate-scale-in">
+        <form method="post" action="/Admin/Brands/Create" class="p-6 space-y-4">
+            @Html.AntiForgeryToken()
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Add Brand</h2>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Name</label>
+                <input name="Name" class="input" required />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Logo URL</label>
+                <input name="LogoUrl" class="input" placeholder="https://..." />
+            </div>
+            <div class="flex items-center gap-3 pt-2">
+                <button type="submit" class="btn btn-primary">Create</button>
+                <button type="button" onclick="this.closest('#createModal').classList.add('hidden')" class="btn btn-secondary">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-fade-in">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md animate-scale-in">
+        <form method="post" class="p-6 space-y-4">
+            @Html.AntiForgeryToken()
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Edit Brand</h2>
+            <input type="hidden" name="id" id="editId" />
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Name</label>
+                <input name="Name" id="editName" class="input" required />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Logo URL</label>
+                <input name="LogoUrl" id="editLogoUrl" class="input" placeholder="https://..." />
+            </div>
+            <div class="flex items-center gap-3 pt-2">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" onclick="this.closest('#editModal').classList.add('hidden')" class="btn btn-secondary">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function editBrand(id, name, logoUrl) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editName').value = name;
+        document.getElementById('editLogoUrl').value = logoUrl;
+        const form = document.querySelector('#editModal form');
+        form.action = '/Admin/Brands/Edit/' + id;
+        document.getElementById('editModal').classList.remove('hidden');
+    }
+</script>

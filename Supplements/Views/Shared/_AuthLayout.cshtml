@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Supplements Store</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 antialiased min-h-screen flex flex-col">
+
+    <nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="/" class="flex items-center gap-2">
+                    <span class="material-icons text-primary-600 text-3xl">fitness_center</span>
+                    <span class="text-xl font-bold text-gray-900 dark:text-white">Supplements</span>
+                </a>
+                <div class="flex items-center gap-4">
+                    <button id="darkModeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-base">
+                        <span class="material-icons text-gray-600 dark:text-gray-400">dark_mode</span>
+                    </button>
+                    <a href="/" class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+                        <span class="material-icons align-text-bottom text-lg">home</span> Back to Store
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 flex items-center justify-center py-12 px-4">
+        <div class="w-full max-w-md">
+            @RenderBody()
+        </div>
+    </main>
+
+    <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-3 max-w-sm w-full"></div>
+
+    <script src="~/js/dark-mode.js" asp-append-version="true"></script>
+    <script src="~/js/toast.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+    @if (TempData["Success"] != null)
+    {
+        <script>showToast('@TempData["Success"]', 'success');</script>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <script>showToast('@TempData["Error"]', 'error');</script>
+    }
+</body>
+</html>

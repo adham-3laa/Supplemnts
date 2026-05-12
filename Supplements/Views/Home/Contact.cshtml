@@ -1,0 +1,135 @@
+@{
+    ViewData["Title"] = "Contact Us";
+}
+<div class="max-w-5xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-12 animate-slide-up">
+        <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">Get In Touch</h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Have a question? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        <!-- Contact Form -->
+        <div class="lg:col-span-3 card card-body animate-slide-up">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Send us a Message</h2>
+            <form method="post" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        Your Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text"
+                           name="name"
+                           required
+                           placeholder="John Doe"
+                           class="input" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        Your Email <span class="text-red-500">*</span>
+                    </label>
+                    <input type="email"
+                           name="email"
+                           required
+                           placeholder="john@example.com"
+                           class="input" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        Subject
+                    </label>
+                    <input type="text"
+                           name="subject"
+                           placeholder="How can we help?"
+                           class="input" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        Message <span class="text-red-500">*</span>
+                    </label>
+                    <textarea name="message"
+                              rows="6"
+                              required
+                              placeholder="Tell us more about your inquiry..."
+                              class="input resize-none"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full">
+                    <span class="material-icons">send</span>
+                    Send Message
+                </button>
+            </form>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="lg:col-span-2 space-y-6 animate-slide-up">
+            <div class="card card-body hover:shadow-lg transition-all duration-300">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/30 dark:to-primary-800/30 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <span class="material-icons text-primary-600 dark:text-primary-400">email</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 dark:text-white mb-1">Email</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Send us an email anytime</p>
+                        <a href="mailto:support@supplements.com" class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
+                            support@supplements.com
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-body hover:shadow-lg transition-all duration-300">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/30 dark:to-primary-800/30 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <span class="material-icons text-primary-600 dark:text-primary-400">phone</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 dark:text-white mb-1">Phone</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Mon-Fri 9am to 6pm</p>
+                        <a href="tel:+15551234567" class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
+                            +1 (555) 123-4567
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-body hover:shadow-lg transition-all duration-300">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/30 dark:to-primary-800/30 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <span class="material-icons text-primary-600 dark:text-primary-400">location_on</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 dark:text-white mb-1">Address</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Visit our store</p>
+                        <p class="text-sm text-gray-700 dark:text-gray-300">
+                            123 Fitness Street<br />
+                            Gym City, 10001
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-body bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 border-primary-200 dark:border-primary-800">
+                <h3 class="font-bold text-gray-900 dark:text-white mb-3">Business Hours</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600 dark:text-gray-400">Monday - Friday</span>
+                        <span class="font-medium text-gray-900 dark:text-white">9:00 AM - 6:00 PM</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600 dark:text-gray-400">Saturday</span>
+                        <span class="font-medium text-gray-900 dark:text-white">10:00 AM - 4:00 PM</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600 dark:text-gray-400">Sunday</span>
+                        <span class="font-medium text-gray-900 dark:text-white">Closed</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

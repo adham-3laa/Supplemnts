@@ -1,0 +1,10 @@
+{
+  "autoUpdatesChannel": "latest",
+  "theme": "dark",
+  "css.lint.unknownAtRules": "ignore",
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://agentrouter.org/",
+    "ANTHROPIC_API_KEY": "sk-DXvU9jMZjKfDdFwL9PcN8fop9KupVu2yWaZQs5utpmxxVTCw",
+    "ANTHROPIC_AUTH_TOKEN": "sk-DXvU9jMZjKfDdFwL9PcN8fop9KupVu2yWaZQs5utpmxxVTCw"
+  }
+}

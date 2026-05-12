@@ -1,0 +1,126 @@
+@model Supplements.ViewModels.Order.OrderDetailViewModel
+@{
+    ViewData["Title"] = $"Order #{Model.Id.ToString().Substring(0, 8)}";
+}
+<div class="max-w-5xl mx-auto">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">Order #@Model.Id.ToString().Substring(0, 8).ToUpper()</h1>
+            <p class="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                <span class="material-icons text-base">schedule</span>
+                Placed on @Model.OrderDate.ToString("MMMM dd, yyyy 'at' h:mm tt")
+            </p>
+        </div>
+        <span class="badge text-base px-4 py-2
+            @(Model.Status == "Pending" ? "badge-warning" :
+              Model.Status == "Processing" ? "badge-info" :
+              Model.Status == "Shipped" ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" :
+              Model.Status == "Delivered" ? "badge-success" :
+              "badge-danger")">
+            @Model.Status
+        </span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Order Items -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="card animate-slide-up">
+                <div class="p-6 bg-gradient-to-br from-primary-50 to-white dark:from-primary-900/10 dark:to-gray-900 border-b border-gray-200 dark:border-gray-800">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        <span class="material-icons text-primary-600 dark:text-primary-400">inventory_2</span>
+                        Order Items
+                    </h2>
+                </div>
+
+                <div class="p-6 space-y-4">
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="flex items-center gap-4 py-4 border-b border-gray-100 dark:border-gray-800 last:border-0">
+                            <div class="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-xl flex items-center justify-center shrink-0 shadow-inner">
+                                <span class="material-icons text-3xl text-gray-400 dark:text-gray-500">inventory_2</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-gray-900 dark:text-white mb-1">@item.ProductName</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    @if (!string.IsNullOrEmpty(item.Flavor))
+                                    {
+                                        <span>@item.Flavor</span>
+                                    }
+                                    @if (!string.IsNullOrEmpty(item.Size))
+                                    {
+                                        <span>· @item.Size</span>
+                                    }
+                                    <span>· Qty: @item.Quantity</span>
+                                </p>
+                            </div>
+                            <p class="text-lg font-bold text-gray-900 dark:text-white">$@item.TotalPrice.ToString("F2")</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="lg:col-span-1 space-y-6">
+            <!-- Summary -->
+            <div class="card sticky top-24 animate-slide-up">
+                <div class="p-6 bg-gradient-to-br from-primary-50 to-white dark:from-primary-900/10 dark:to-gray-900 border-b border-gray-200 dark:border-gray-800">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Order Summary</h3>
+                </div>
+
+                <div class="p-6 space-y-4">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600 dark:text-gray-400">Subtotal</span>
+                        <span class="font-semibold text-gray-900 dark:text-white">$@Model.SubTotal.ToString("F2")</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600 dark:text-gray-400">Shipping</span>
+                        <span class="font-semibold text-gray-900 dark:text-white">$@Model.ShippingCost.ToString("F2")</span>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="flex justify-between items-center">
+                        <span class="text-lg font-bold text-gray-900 dark:text-white">Total</span>
+                        <span class="text-2xl font-bold text-primary-600 dark:text-primary-400">$@Model.TotalPrice.ToString("F2")</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Address -->
+            <div class="card animate-slide-up">
+                <div class="p-6 bg-gradient-to-br from-primary-50 to-white dark:from-primary-900/10 dark:to-gray-900 border-b border-gray-200 dark:border-gray-800">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        <span class="material-icons text-primary-600 dark:text-primary-400">local_shipping</span>
+                        Shipping Address
+                    </h3>
+                </div>
+                <div class="p-6">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">@Model.Address</p>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Notes))
+            {
+                <div class="card animate-slide-up">
+                    <div class="p-6 bg-gradient-to-br from-primary-50 to-white dark:from-primary-900/10 dark:to-gray-900 border-b border-gray-200 dark:border-gray-800">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <span class="material-icons text-primary-600 dark:text-primary-400">note</span>
+                            Order Notes
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">@Model.Notes</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mt-8">
+        <a href="/Order" class="btn btn-outline">
+            <span class="material-icons">arrow_back</span>
+            Back to Orders
+        </a>
+    </div>
+</div>
